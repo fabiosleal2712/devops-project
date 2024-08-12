@@ -68,13 +68,12 @@ resource "aws_instance" "web_server" {
     Name = "web-server"
   }
 }
-
 module "eks" {
-  source          = "terraform-aws-modules/eks/aws"
-  cluster_name    = var.cluster_name
-  cluster_version = "1.24"
-  subnets         = module.vpc.private_subnet_ids
-  vpc_id          = module.vpc.vpc_id
+    source          = "terraform-aws-modules/eks/aws"
+    cluster_name    = var.cluster_name
+    cluster_version = "1.24"
+    vpc_id          = module.vpc.vpc_id
+    subnets         = module.vpc.private_subnet_ids
 }
 
 resource "aws_db_instance" "default" {
