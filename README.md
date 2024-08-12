@@ -1,7 +1,7 @@
 # Projeto de Infraestrutura AWS com Terraform
 
 ## Descrição
-Este projeto tem como objetivo criar e gerenciar um ambiente completo na AWS utilizando Terraform. O ambiente inclui recursos como VPC, EC2, EKS, RDS, CDN, e ferramentas de CI/CD.
+Este projeto tem como objetivo criar e gerenciar um ambiente completo na AWS utilizando Terraform. O ambiente inclui recursos como VPC, EC2, EKS, RDS, CDN, e ferramentas de CI/CD para automação de deploys.
 
 ## Pré-requisitos
 - Conta AWS
@@ -12,18 +12,18 @@ Este projeto tem como objetivo criar e gerenciar um ambiente completo na AWS uti
 ## Estrutura do Repositório
 ```plaintext
 ├── terraform/
-│   ├── main.tf
-│   ├── variables.tf
-│   ├── outputs.tf
+│   ├── main.tf                  # Arquivo principal do Terraform
+│   ├── variables.tf             # Definição de variáveis
+│   ├── outputs.tf               # Saídas dos recursos
 │   ├── modules/
-│   │   └── (módulos terraform)
+│   │   └── (módulos terraform)  # Módulos reutilizáveis do Terraform
 ├── ci-cd/
 │   ├── .github/
 │   │   └── workflows/
-│   │       └── main.yml
+│   │       └── main.yml         # Configuração do pipeline CI/CD
 ├── docs/
-│   ├── README.md
-│   ├── implementation_guide.md
-│   ├── ci_cd_guide.md
+│   ├── README.md                # Este arquivo README
+│   ├── implementation_guide.md  # Guia detalhado de implementação
+│   ├── ci_cd_guide.md           # Guia de configuração do CI/CD
 └── video/
-    └── video_explicativo.mp4
+    └── video_explicativo.mp4    # Vídeo explicativo da solução
