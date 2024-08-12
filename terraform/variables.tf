@@ -25,13 +25,19 @@ variable "private_subnets" {
 variable "ami_id" {
   description = "AMI ID for the EC2 instance"
   type        = string
-  default     = "ami-0c55b159cbfafe1f0"  # Exemplo de AMI ID para Amazon Linux 2
+  default     = "ami-0ae8f15ae66fe8cda"  # Exemplo de AMI ID para Amazon Linux 2
 }
 
 variable "instance_type" {
   description = "Type of EC2 instance"
   type        = string
   default     = "t2.micro"
+}
+
+variable "cluster_name" {
+  description = "Name of the EKS cluster"
+  type        = string
+  default     = "my-eks-cluster"
 }
 
 variable "db_name" {

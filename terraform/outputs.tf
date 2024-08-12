@@ -22,3 +22,4 @@ output "db_secret_arn" {
   description = "The ARN of the RDS credentials secret"
   value       = aws_secretsmanager_secret.db_secret.arn
 }
+# }

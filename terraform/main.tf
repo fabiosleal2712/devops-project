@@ -56,7 +56,6 @@ resource "aws_network_acl" "private_nacl" {
     Name = "private-nacl"
   }
 }
-
 resource "aws_instance" "web_server" {
   ami           = var.ami_id
   instance_type = var.instance_type
@@ -68,12 +67,12 @@ resource "aws_instance" "web_server" {
     Name = "web-server"
   }
 }
+
 module "eks" {
-    source          = "terraform-aws-modules/eks/aws"
-    cluster_name    = var.cluster_name
-    cluster_version = "1.24"
-    vpc_id          = module.vpc.vpc_id
-    subnets         = module.vpc.private_subnet_ids
+  source          = "terraform-aws-modules/eks/aws"
+  cluster_name    = var.cluster_name
+  cluster_version = "1.24"
+  vpc_id          = module.vpc.vpc_id
 }
 
 resource "aws_db_instance" "default" {
@@ -81,15 +80,12 @@ resource "aws_db_instance" "default" {
   engine               = "mysql"
   engine_version       = "8.0"
   instance_class       = "db.t2.micro"
-  name                 = var.db_name
   username             = var.db_username
   password             = var.db_password
   parameter_group_name = "default.mysql8.0"
   skip_final_snapshot  = true
   publicly_accessible  = false
   vpc_security_group_ids = [aws_security_group.allow_http.id]
-
-  subnet_group_name = aws_db_subnet_group.main.name
 }
 
 resource "aws_db_subnet_group" "main" {
@@ -141,4 +137,48 @@ resource "aws_instance" "wordpress" {
   tags = {
     Name = "wordpress-server"
   }
+}
+
+resource "aws_cloudwatch_metric_alarm" "cpu_alarm" {
+  alarm_name          = "high_cpu_usage"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = "2"
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/EC2"
+  period              = "120"
+  statistic           = "Average"
+  threshold           = "80"
+
+  dimensions = {
+    InstanceId = aws_instance.wordpress.id
+  }
+
+  alarm_actions = [aws_autoscaling_policy.scale_up.arn]
+}
+
+
+resource "aws_autoscaling_group" "wordpress_asg" {
+  desired_capacity     = 1
+  max_size             = 3
+  min_size             = 1
+  vpc_zone_identifier  = module.vpc.public_subnet_ids
+  launch_configuration = aws_launch_configuration.wordpress_lc.id
+}
+
+resource "aws_launch_configuration" "wordpress_lc" {
+  image_id        = var.wordpress_ami_id
+  instance_type   = var.wordpress_instance_type
+  security_groups = [aws_security_group.allow_http.id]
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_autoscaling_policy" "scale_up" {
+  name                   = "scale_up"
+  scaling_adjustment     = 1
+  adjustment_type        = "ChangeInCapacity"
+  cooldown               = 300
+  autoscaling_group_name = aws_autoscaling_group.wordpress_asg.name
 }
