@@ -1,38 +1,54 @@
-# Guia de Configuração de CI/CD com GitHub Actions
+# Guia CI/CD
 
-## Introdução
-Este documento descreve a configuração do pipeline de CI/CD utilizando GitHub Actions para automação de build, teste e deploy da infraestrutura AWS com Terraform.
+Este guia explica a configuração do pipeline CI/CD usando GitHub Actions para automatizar o deploy da infraestrutura e da aplicação.
+
+## Visão Geral
+
+O pipeline é acionado em cada push para a branch `main`. Ele automatiza as seguintes etapas:
+
+1. **Checkout do código**: Clona o repositório para o ambiente de CI.
+2. **Configuração do Terraform**: Configura o Terraform e os plugins necessários.
+3. **Inicialização do Terraform**: Inicializa o Terraform no ambiente CI.
+4. **Plano do Terraform**: Gera um plano de execução do Terraform.
+5. **Aplicação do Terraform**: Aplica as mudanças na infraestrutura AWS.
 
 ## Configuração do Pipeline
 
-### 1. Arquivo de Workflow
-- O pipeline de CI/CD é definido no arquivo `.github/workflows/main.yml`.
+O pipeline é definido no arquivo `.github/workflows/main.yml`. 
 
-### 2. Disparo do Pipeline
-- O pipeline é disparado automaticamente em qualquer push no branch `main`.
+### Passos principais:
 
-## Passos do Pipeline
+```yaml
+name: CI/CD Pipeline
 
-### 1. Checkout do Código
-- A primeira etapa do pipeline realiza o checkout do código do repositório.
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
-### 2. Setup do Terraform
-- O Terraform é configurado na versão especificada, garantindo a consistência do ambiente de execução.
+jobs:
+  terraform:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
 
-### 3. Inicialização do Terraform
-- O comando `terraform init` é executado para inicializar o backend e preparar o ambiente.
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
 
-### 4. Aplicação das Configurações
-- O comando `terraform apply -auto-approve` é utilizado para aplicar as configurações no ambiente AWS.
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.0.0
 
-## Monitoramento e Logs
+      - name: Terraform Init
+        run: terraform init
 
-### 1. Logs do Pipeline
-- Os logs do pipeline podem ser visualizados diretamente na interface do GitHub Actions.
+      - name: Terraform Plan
+        run: terraform plan
 
-### 2. Troubleshooting
-- Em caso de falha no pipeline, os logs detalhados fornecerão insights para identificar e resolver o problema.
-
----
-
-**Este guia proporciona uma visão clara de como configurar e utilizar o pipeline de CI/CD para este projeto.** 🚀
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main'
+        run: terraform apply -auto-approve

@@ -1,52 +1,62 @@
 
----
-
-### **2. `implementation_guide.md`**
+O `implementation_guide.md` fornece detalhes sobre a implementação do projeto.
 
 ```markdown
-# Guia de Implementação da Infraestrutura AWS com Terraform
+# Guia de Implementação
 
-## Introdução
-Este documento detalha o processo de implementação da infraestrutura AWS utilizando Terraform. Serão abordados todos os recursos configurados, desde a criação da VPC até o deploy do WordPress.
+Este guia detalha como cada componente da infraestrutura foi configurado e como eles se integram para formar a solução completa.
 
-## Estrutura da VPC e Subnets
+## VPC
 
-### 1. Criando a VPC
-- A VPC foi configurada com um bloco CIDR de `10.0.0.0/16`.
-- Foram criadas subnets públicas e privadas para distribuição dos recursos.
+A VPC é configurada com subnets públicas e privadas. As subnets privadas hospedam os nós EKS e o banco de dados RDS, enquanto as subnets públicas são usadas para expor serviços como o Load Balancer do WordPress.
 
-### 2. Configuração de Subnets
-- Subnets públicas para instâncias EC2 e o load balancer.
-- Subnets privadas para o banco de dados RDS e recursos sensíveis.
+- **módulo**: `vpc/`
+- **outputs**: `vpc_id`, `subnet_ids`
 
-### 3. Tabelas de Roteamento e Gateways
-- Configuração de uma internet gateway para comunicação com a internet.
-- Tabelas de roteamento apropriadas foram associadas às subnets públicas e privadas.
+## Security Groups
 
-## Implementação de Recursos de Computação
+Os Security Groups controlam o tráfego de entrada e saída para as instâncias EC2, RDS, e outros componentes.
 
-### 1. Instâncias EC2
-- Instâncias EC2 foram configuradas nas subnets públicas para servir como servidores de aplicação.
+- **módulo**: `security-groups/`
+- **regras principais**: SSH, HTTP, HTTPS, MySQL
 
-### 2. Cluster EKS
-- Um cluster EKS foi provisionado para orquestração de contêineres com Kubernetes.
+## EKS
 
-### 3. Banco de Dados RDS
-- Uma instância RDS MySQL foi criada em uma subnet privada para armazenar os dados da aplicação.
+O cluster EKS orquestra os contêineres do Kubernetes, onde o WordPress é implantado.
 
-## Gestão de Segredos
+- **módulo**: `eks/`
+- **outputs**: `cluster_endpoint`, `cluster_id`, `node_security_group_id`
 
-### 1. AWS Secrets Manager
-- As credenciais do banco de dados e outros segredos foram armazenados no AWS Secrets Manager.
+## RDS
 
-## Observabilidade e Escalabilidade
+O banco de dados RDS é configurado para armazenar os dados da aplicação WordPress. As credenciais são gerenciadas pelo AWS Secrets Manager.
 
-### 1. Monitoramento com CloudWatch
-- Alarmes foram configurados para monitorar a utilização de CPU nas instâncias EC2.
+- **módulo**: `rds/`
+- **outputs**: `db_endpoint`, `rds_secret_arn`
 
-### 2. Auto Scaling
-- Políticas de auto scaling foram definidas para garantir a escalabilidade automática das instâncias com base na demanda.
+## CDN
 
----
+A CDN usa o CloudFront para distribuir o conteúdo de forma eficiente globalmente.
 
-**Este guia cobre todos os aspectos necessários para implementar a infraestrutura completa descrita.** 🚀
+- **módulo**: `cdn/`
+- **outputs**: `cdn_domain_name`
+
+## Secrets Manager
+
+O Secrets Manager armazena de forma segura as credenciais do banco de dados RDS.
+
+- **módulo**: `secrets-manager/`
+- **outputs**: `secret_arn`
+
+## WordPress
+
+A aplicação WordPress é implantada no cluster EKS. O serviço é exposto via Load Balancer e utiliza o RDS como backend.
+
+- **módulo**: `wordpress/`
+- **outputs**: `wordpress_service_ip`
+
+## Próximos Passos
+
+1. Execute testes para garantir que todos os componentes estejam funcionando corretamente.
+2. Verifique as políticas de segurança e ajuste conforme necessário.
+3. Configure monitoramento adicional conforme as necessidades do ambiente de produção.

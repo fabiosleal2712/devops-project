@@ -1,29 +1,24 @@
-# Projeto de Infraestrutura AWS com Terraform
+# DevOps Project - AWS Terraform Infrastructure
 
-## Descrição
-Este projeto tem como objetivo criar e gerenciar um ambiente completo na AWS utilizando Terraform. O ambiente inclui recursos como VPC, EC2, EKS, RDS, CDN, e ferramentas de CI/CD para automação de deploys.
+Este projeto configura uma infraestrutura completa na AWS usando Terraform, incluindo VPC, EC2, EKS, RDS, Security Groups, CDN, e Secrets Manager. Ele também implanta uma aplicação WordPress em um cluster Kubernetes (EKS).
+
+## Estrutura do Projeto
+
+- **terraform/**: Contém a configuração principal do Terraform e módulos reutilizáveis.
+- **ci-cd/**: Contém a configuração do CI/CD usando GitHub Actions.
+- **docs/**: Contém a documentação do projeto, guias de implementação e CI/CD.
+- **video/**: Contém o vídeo explicativo da solução.
 
 ## Pré-requisitos
-- Conta AWS
-- Terraform instalado
-- Git instalado
-- Conta no GitHub
 
-## Estrutura do Repositório
-```plaintext
-├── terraform/
-│   ├── main.tf                  # Arquivo principal do Terraform
-│   ├── variables.tf             # Definição de variáveis
-│   ├── outputs.tf               # Saídas dos recursos
-│   ├── modules/
-│   │   └── (módulos terraform)  # Módulos reutilizáveis do Terraform
-├── ci-cd/
-│   ├── .github/
-│   │   └── workflows/
-│   │       └── main.yml         # Configuração do pipeline CI/CD
-├── docs/
-│   ├── README.md                # Este arquivo README
-│   ├── implementation_guide.md  # Guia detalhado de implementação
-│   ├── ci_cd_guide.md           # Guia de configuração do CI/CD
-└── video/
-    └── video_explicativo.mp4    # Vídeo explicativo da solução
+- Conta AWS com permissões adequadas.
+- Chave SSH para acessar as instâncias EC2.
+- Terraform instalado na máquina local.
+- AWS CLI configurado.
+
+## Como Usar
+
+1. Clone este repositório:
+   ```bash
+   git clone https://github.com/yourusername/devops-project.git
+   cd devops-project
